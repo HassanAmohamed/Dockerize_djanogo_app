@@ -25,9 +25,7 @@ SECRET_KEY = '_%wbq3gi-ohhxuenszmc$m1(grnq+__m&pr2@j+n8(gw_!eb0l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ['*']  # Allows all hosts (not recommended for production)
 # Application definition
 
 INSTALLED_APPS = [
@@ -76,16 +74,30 @@ WSGI_APPLICATION = 'dicussion_board.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Boards_django',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Sona;011',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Boards_django',
-        'USER': 'postgres',
-        'PASSWORD': 'Sona;011',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DATABASE_NAME', 'Boards_django'),  # Ensure this matches your database name
+        'USER': os.getenv('DATABASE_USER', 'postgres'),       # Ensure this matches your DB user
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'Sona;011'),
+        'HOST': os.getenv('DATABASE_HOST', 'db'),             # Use 'db' as defined in docker-compose.yml
+        'PORT': os.getenv('DATABASE_PORT', '5432'),           # Default PostgreSQL port
     }
 }
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Password validation

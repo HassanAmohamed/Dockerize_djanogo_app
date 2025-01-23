@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: django-app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DJANGO_SECRET_KEY: "_%wbq3gi-ohhxuenszmc$m1(grnq+__m&pr2@j+n8(gw_!eb0l"  # Change this to a secure key
+      DEBUG: "False"
+      DATABASE_NAME: "Boards_django"
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "Sona;011"
+      DATABASE_HOST: "db"  # Change this to 'db'
+      DATABASE_PORT: "5432"
+    volumes:
+      - .:/app
+    env_file:
+      - .env  # Optional
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "Boards_django"  # Ensure this matches your DB name
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "Sona;011"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

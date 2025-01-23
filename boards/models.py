@@ -23,7 +23,7 @@ class Board(models.Model):
 class Topic(models.Model):
     subject = models.CharField(max_length=255)
     board = models.ForeignKey(Board,related_name='topics',on_delete=models.CASCADE)
-    created_at = models.ForeignKey(User,related_name='topics',on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, related_name='topics', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.PositiveIntegerField(default=0)
     updated_by = models.ForeignKey(User,null=True,related_name='+',on_delete=models.CASCADE)

@@ -1,13 +1,46 @@
 {% extends 'base.html' %}
 
-{%block title%}Boards {%endblock%}
+{%block title%} Boards {%endblock%}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item active">Boards</li>
 {%endblock%}
 
 {% block content %}
-<table class="table">
+<table class="table table-hover table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Board</th>
+        <th scope="col">Posts</th>
+        <th scope="col">Topics</th>
+        <th scope="col">Last Post</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for board in boards %}
+    <tr>
+        <td>
+            <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+            <br>
+        <small class="text-muted">{{ board.description }}</small>
+        </td>
+        <td>{{ board.get_posts_count }}</td>
+        <td>{{ board.topics.count }}</td>
+        <td>
+            {% with post=board.get_last_post%}
+            {% if last_post %}
+                by {{ last_post.created_by.username }} at {{ last_post.created_at }}
+            {% else %}
+            <small>No Posts</small>
+            {% endif %}
+            {% endwith %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- <table class="table">
     <thead class="thead-dark">
     <tr>
         <th>Board</th>
@@ -28,7 +61,7 @@
             {% with post=board.get_last_post%}
             {%if post%}
             by {{post.created_by.username}} at {{post.created_at}}
-           {%else%}
+        {%else%}
             <small>No Posts</small>
             {%endif%}
             {%endwith%}
@@ -38,6 +71,6 @@
     {%endfor%}
 
     </tbody>
-</table>
+</table> -->
 
 {%endblock%}
