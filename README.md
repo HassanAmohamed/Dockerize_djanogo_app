@@ -76,6 +76,8 @@ Dockerize_django_app/
 3. **Build and run the Docker containers:**
    ```bash
    docker-compose up -d
+   docker-compose logs db
+   docker-compose run web python manage.py migrate # to migrate db container 
    ```
 
 4. **Access the application:**
