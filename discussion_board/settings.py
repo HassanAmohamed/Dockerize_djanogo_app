@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME', 'Boards_django'),  # Ensure this matches your database name
         'USER': os.getenv('DATABASE_USER', 'postgres'),       # Ensure this matches your DB user
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'Sona;011'),
-        'HOST': os.getenv('DATABASE_HOST', 'localhost'),             # Use 'db' as defined in docker-compose.yml
+        'HOST': os.getenv('DATABASE_HOST', 'db'),             # Use 'db' as defined in docker-compose.yml
         'PORT': os.getenv('DATABASE_PORT', '5432'),           # Default PostgreSQL port
     }
 }
