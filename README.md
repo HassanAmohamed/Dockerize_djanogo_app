@@ -1,6 +1,3 @@
-Here's a styled version of your README file using Markdown:
-
-```markdown
 # Dockerize Django App
 
 This project demonstrates how to Dockerize a simple Django application with a discussion board feature, using PostgreSQL as the database.
