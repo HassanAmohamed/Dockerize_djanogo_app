@@ -1,0 +1,33 @@
+username for database postgress 
+password for database Sona;011
+username for superuser Sona 
+mail is my Gmail
+password for superuser Sona;011
+boards is application 
+disscusion_board is project 
+use py manage.py runserver To runserver 
+use cls to go up on terminal
+use py manage.py createsuperuser to createsuperuser
+use py manage.py shell to open python shell
+use py manage.py makemigrations to makemigrations
+use py manage.py migrate to migrate database
+use django-admin startapp boards . to create app and 
+manage.py out in folder Note that every project have more than app
+use django-admin startproject boards  to create project
+use pip freeze > requirements.txt to copy requirements to file
+use pip install -r requirements.txt  to install requirements from file 
+pip install django-widget-tweaks
+pip install psycopg2-binary
+pip install setuptools
+
+
+note to change this line 
+'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+#here to localhost dev
+to 
+'HOST': os.getenv('DATABASE_HOST', 'db'),
+#here to dockrize
+
+
+
+
