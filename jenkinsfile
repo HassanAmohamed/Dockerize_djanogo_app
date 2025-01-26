@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage("Clone Code (// Fetches code from Git repository)") {
+            steps {
+                echo "Cloning the code"
+                git url: "https://github.com/HassanAmohamed/Dockerize_djanogo_app.git", branch: "dev"
+            }
+        }
+
+        stage("Build Docker Image (// Creates the Docker image)") {
+            steps {
+                echo "Building the Docker image"
+                sh "docker build -t discusson-board-app ."
+            }
+        }
+
+        stage("Push to Docker Hub (// Authenticates and pushes image)") {
+            steps {
+                echo "Pushing the Docker image to Docker Hub"
+                withCredentials([usernamePassword(credentialsId: "dockerHub", passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                    sh """
+                        docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+                        docker tag discusson-board-app $DOCKER_HUB_USERNAME/discusson-board-app:latest
+                        docker push $DOCKER_HUB_USERNAME/discusson-board-app:latest
+                    """
+                }
+            }
+        }
+
+        stage("Deploy (// Starts the container)") {
+            steps {
+                echo "Deploying the container"
+                sh "docker-compose down && docker-compose up -d"
+            }
+        }
+    }
+}
