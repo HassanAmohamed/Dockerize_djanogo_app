@@ -9,10 +9,20 @@ pipeline {
             }
         }
 
-        stage("Build Docker Image") {
-            steps {
-                echo "Building the Docker image"
-                sh "docker build -t discussion-board-app ."
+        stage("Build and Test") {
+            parallel {
+                stage("Build Docker Image") {
+                    steps {
+                        echo "Building the Docker image"
+                        bat "docker build -t discussion-board-app ."
+                    }
+                }
+                stage("Run Tests") {
+                    steps {
+                        echo "Running tests"
+                        bat "python -m pytest tests/"
+                    }
+                }
             }
         }
 
@@ -20,10 +30,10 @@ pipeline {
             steps {
                 echo "Pushing the Docker image to Docker Hub"
                 withCredentials([usernamePassword(credentialsId: "dockerHub", passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                    sh """
-                        docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD || exit 1
-                        docker tag discussion-board-app $DOCKER_HUB_USERNAME/discussion-board-app:latest || exit 1
-                        docker push $DOCKER_HUB_USERNAME/discussion-board-app:latest || exit 1
+                    bat """
+                        docker login -u %DOCKER_HUB_USERNAME% -p %DOCKER_HUB_PASSWORD%
+                        docker tag discussion-board-app %DOCKER_HUB_USERNAME%/discussion-board-app:latest
+                        docker push %DOCKER_HUB_USERNAME%/discussion-board-app:latest
                     """
                 }
             }
@@ -32,7 +42,7 @@ pipeline {
         stage("Deploy") {
             steps {
                 echo "Deploying the container using Docker Compose"
-                sh "docker-compose down && docker-compose up -d"
+                bat "docker-compose down && docker-compose up -d"
             }
         }
     }
@@ -40,7 +50,7 @@ pipeline {
     post {
         always {
             echo "Cleaning up Docker Hub credentials"
-            sh "docker logout"
+            bat "docker logout"
         }
         success {
             echo "Pipeline executed successfully!"
