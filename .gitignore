@@ -1,8 +1,11 @@
 __pycache__
-.git
-.env
 *.pyc
 *.pyo
 *.pyd
+*.db
+*.sqlite3
+*.log
+tests/
+*.git
 tome.txt 
 db.sqlite3
