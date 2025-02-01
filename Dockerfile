@@ -2,8 +2,8 @@
 FROM python:3.9-slim as builder
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 # Set the working directory
 WORKDIR /app
@@ -16,21 +16,22 @@ RUN apt-get update && \
 
 # Copy requirements file and install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Final Image
 FROM python:3.9-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 # Set the working directory
 WORKDIR /app
 
 # Copy only the necessary files from the builder stage
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+
+# Copy the application code
 COPY . .
 
 # Expose port 8000 for the Django app
