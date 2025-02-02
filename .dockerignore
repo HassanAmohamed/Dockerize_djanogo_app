@@ -1,0 +1,15 @@
+
+*.pyd
+*.db
+*.sqlite3
+*.log
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+*.md
+*.yml
+tests/
+db.sqlite3

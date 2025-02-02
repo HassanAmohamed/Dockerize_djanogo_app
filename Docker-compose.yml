@@ -19,9 +19,9 @@ services:
       DATABASE_HOST: "db"
       DATABASE_PORT: "5432"
     volumes:
-      - .:/app  # Consider using a named volume for production
+      - .:/app  
     env_file:
-      - .env  # Optional, good for managing secrets
+      - .env  # for managing secrets
 
   db:
     image: postgres:latest
