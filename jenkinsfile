@@ -1,29 +1,44 @@
+/*
+ * Jenkins Pipeline for Discussion Board App CI/CD
+ * Description: Builds, tests, and deploys a Dockerized Django application
+ * Author: Hassan Ahmed Mohamed
+ * Repository: https://github.com/HassanAmohamed/Dscussion_Board.git
+ */
+
 pipeline {
-    agent any
+    agent any  // Runs on any available Jenkins agent
 
     stages {
+        // Stage 1: Clone source code from repository
         stage("Clone Code") {
             steps {
                 script {
-                    def startTime = System.currentTimeMillis()
+                    def startTime = System.currentTimeMillis()  // Start timer for metrics
                     echo "Cloning the code from Git repository"
-                    git url: "https://github.com/HassanAmohamed/Dockerize_djanogo_app.git", branch: "dev"
+                    
+                    // Clone the dev branch from GitHub
+                    git url: "https://github.com/HassanAmohamed/Dscussion_Board.git", branch: "dev"
+                    
                     echo "Successfully cloned the code"
                     def duration = (System.currentTimeMillis() - startTime) / 1000
-                    echo "Time taken for Clone Code: ${duration} seconds"
+                    echo "Time taken for Clone Code: ${duration} seconds"  // Performance metric
                 }
             }
         }
 
+        // Stage 2: Build Docker image with BuildKit for better caching
         stage("Build Docker Image") {
             steps {
                 script {
                     def startTime = System.currentTimeMillis()
                     echo "Building the Docker image with BuildKit"
+                    
+                    // Windows batch command to build Docker image with cache optimization
                     bat """
-                        set DOCKER_BUILDKIT=1
+                        set DOCKER_BUILDKIT=1  // Enable BuildKit for faster builds
                         docker build --cache-from %DOCKER_HUB_USERNAME%/discussion-board-app:latest -t discussion-board-app .
                     """
+                    
                     echo "Successfully built Docker Image"
                     def duration = (System.currentTimeMillis() - startTime) / 1000
                     echo "Time taken for Build Docker Image: ${duration} seconds"
@@ -31,18 +46,26 @@ pipeline {
             }
         }
 
+        // Stage 3: Push image to Docker Hub registry
         stage("Push to Docker Hub") {
             steps {
                 script {
                     def startTime = System.currentTimeMillis()
                     echo "Pushing the Docker image to Docker Hub"
-                    withCredentials([usernamePassword(credentialsId: "dockerHub", passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                    
+                    // Securely use Docker Hub credentials from Jenkins credentials store
+                    withCredentials([usernamePassword(
+                        credentialsId: "dockerHub", 
+                        passwordVariable: 'DOCKER_HUB_PASSWORD', 
+                        usernameVariable: 'DOCKER_HUB_USERNAME'
+                    )]) {
                         bat """
                             docker login -u %DOCKER_HUB_USERNAME% -p %DOCKER_HUB_PASSWORD%
                             docker tag discussion-board-app %DOCKER_HUB_USERNAME%/discussion-board-app:latest
                             docker push %DOCKER_HUB_USERNAME%/discussion-board-app:latest
                         """
                     }
+                    
                     echo "Successfully pushed to Docker Hub"
                     def duration = (System.currentTimeMillis() - startTime) / 1000
                     echo "Time taken for Push to Docker Hub: ${duration} seconds"
@@ -50,12 +73,16 @@ pipeline {
             }
         }
 
+        // Stage 4: Deploy using Docker Compose
         stage("Deploy") {
             steps {
                 script {
                     def startTime = System.currentTimeMillis()
                     echo "Deploying the container using Docker Compose"
+                    
+                    // Stop existing containers and start new ones in detached mode
                     bat "docker-compose down && docker-compose up -d"
+                    
                     echo "Successfully Deployed"
                     def duration = (System.currentTimeMillis() - startTime) / 1000
                     echo "Time taken for Deploy: ${duration} seconds"
@@ -64,16 +91,17 @@ pipeline {
         }
     }
 
+    // Post-build actions
     post {
         always {
-            echo "Cleaning up Docker Hub credentials"
-            bat "docker logout"
+            echo "Cleaning up Docker Hub credentials"  // Security best practice
+            bat "docker logout"  // Remove Docker Hub credentials
         }
         success {
-            echo "Pipeline executed successfully!"
+            echo "Pipeline executed successfully!"  // Success notification
         }
         failure {
-            echo "Pipeline failed. Check the logs for details."
+            echo "Pipeline failed. Check the logs for details."  // Failure notification
         }
     }
 }
