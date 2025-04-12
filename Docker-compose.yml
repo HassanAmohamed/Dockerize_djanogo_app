@@ -1,9 +1,9 @@
-version: "3.9"
+version: "3"
 
 services:
   web:
     build:
-      context: .
+      context: .  # Set the build context to the current directory
       dockerfile: Dockerfile  
     container_name: django-app
     ports:
@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/app  
     env_file:
-      - .env  # for managing secrets
+      - .env 
 
   db:
     image: postgres:latest

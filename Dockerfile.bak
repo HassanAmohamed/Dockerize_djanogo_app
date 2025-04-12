@@ -1,0 +1,37 @@
+# Stage 1: Build environment
+FROM python:3.11-alpine as builder
+
+WORKDIR /app
+COPY requirements.txt .
+
+# Install build dependencies and build Python packages
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    postgresql-dev \
+    && pip install --user -r requirements.txt \
+    && apk del .build-deps
+
+# Stage 2: Runtime image
+FROM python:3.11-alpine
+
+WORKDIR /app
+
+# Copy only the necessary files from builder
+COPY --from=builder /root/.local /root/.local
+COPY . .
+
+# Ensure scripts in .local are usable
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/app
+
+# Minimal runtime dependencies
+RUN apk add --no-cache libpq
+
+# Run as non-root user
+RUN adduser -D djangouser && chown -R djangouser /app
+USER djangouser
+
+EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_django_app.wsgi"]
